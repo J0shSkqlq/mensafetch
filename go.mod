@@ -1,4 +1,4 @@
-module MensaFetch
+module mensafetch
 
 go 1.21.6
 
