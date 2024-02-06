@@ -1,0 +1,12 @@
+favCanteen: 6
+customShorthands: 
+  m: "Mensa Matrix"
+  z: "Mensa Zeltschlössen"
+  s: "Mensa Siedepunkt"
+dataToPrint:
+  metadata: date
+  meals:
+    - "category"
+    - "name"
+    - "student_price"
+    - "external_price"
