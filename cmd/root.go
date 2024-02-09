@@ -1,7 +1,8 @@
 package cmd
 
 import (
-	"fmt"
+	"mensafetch/config"
+	"mensafetch/usecase"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -15,36 +16,18 @@ var rootCmd = &cobra.Command{
 Developers can now check what their favourite canteen has to offer without leaving the comfort of the Terminal
 Usage without any subcommand will print out todays meals for a specific canteen with the configured information`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf(`----------------------------------------------------------------------------
-|   \  |                                  \  |         |         _)        |
-|  |\/ |   _ \  __ \    __|   _\ |       |\/ |   _\ |  __|   __|  |  \  /  |
-|  |   |   __/  |   | \__ \  (   |       |   |  (   |  |    |     |    <   |
-| _|  _| \___| _|  _| ____/ \__._|      _|  _| \__._| \__| _|    _| _/\_\  |
-----------------------------------------------------------------------------
+		configFileName, err := cmd.Flags().GetString("Configfile")
+		c, err := config.ReadConfig(configFileName)
+		id, err := cmd.Flags().GetInt("MensaID")
+		day, err := cmd.Flags().GetInt("DayOffset")
+		name, err := cmd.Flags().GetString("MensaName")
+		if err != nil {
+			return
+		}
+		flags := config.NewFlagSet(name, id, day, configFileName)
 
-06.02.2024
-
------------
-category: Suppen
-name: Porree-Weißkohleintopf mit Rindfleisch und Schweinefleisch
-price: 2.18€
------------
-category: Angebot 1
-name: Schweinekammbraten mit Möhrengemüse und Semmelknödel
-price: 3.33€
------------
-category: Angebot 4
-name: Linsen-Moussaka mit Tsatsiki, dazu Salat
-price: 3.13€
------------
-category: Angebot 2
-name: Penne mit Champignon-Tomaten-Rahmsoße und veganem Schmelz oder geriebener Goudakäse
-price: 2.35€
------------
-category: Angebot 3
-name: Penne mit Puten-Currysoße, dazu geriebener Käse
-price: 2.35€
-			`)
+		fetcher, err := usecase.NewFetcher(flags, c)
+		fetcher.PrintMeals()
 	},
 }
 
@@ -63,6 +46,8 @@ func init() {
 	// will be global for your application.
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.MensaFetch.yaml)")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.PersistentFlags().Int("DayOffSet", 0, "Which day to fetch relative to today. 0 for Today, 1 for tomorrow and so on")
-	rootCmd.PersistentFlags().Int("CanteenID", 0, "The ID of the Canteen. Will try to use the string for the name if not given")
+	rootCmd.PersistentFlags().IntP("DayOffset", "d", 0, "Which day to fetch relative to today. 0 for Today, 1 for tomorrow and so on")
+	rootCmd.PersistentFlags().IntP("MensaID", "m", 0, "The ID of the Canteen. Will try to use the string for the name if not given")
+	rootCmd.PersistentFlags().StringP("MensaName", "n", "", "The Name of the Canteen. Will return a list of possibilites if more than one name matches")
+	rootCmd.PersistentFlags().StringP("Configfile", "c", "config.yaml", "The Name of the config file in your mensafetch installation directory")
 }

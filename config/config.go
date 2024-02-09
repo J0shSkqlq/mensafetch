@@ -22,6 +22,15 @@ type FlagSet struct {
 	ConfigFileName string
 }
 
+func NewFlagSet(name string, id int, day int, cName string) *FlagSet {
+	return &FlagSet{
+		Mensaname:      name,
+		MensaId:        id,
+		DayOffSet:      day,
+		ConfigFileName: cName,
+	}
+}
+
 func ReadConfig(filename string) (*Configuration, error) {
 	// Read the file
 	data, err := os.ReadFile(filename)

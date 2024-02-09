@@ -13,7 +13,7 @@ type Fetcher struct {
 	meals  []entity.Meal
 }
 
-func FetchMeals(flags *config.FlagSet, config *config.Configuration) (*Fetcher, error) {
+func NewFetcher(flags *config.FlagSet, config *config.Configuration) (*Fetcher, error) {
 	meals, err := controller.GetMeals(flags.MensaId, flags.DayOffSet)
 
 	if err != nil {
