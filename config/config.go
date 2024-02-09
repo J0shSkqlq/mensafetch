@@ -6,7 +6,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// Configuration maps to the structure of configuration.yaml
 type Configuration struct {
 	FavCanteen       int               `yaml:"favCanteen"`
 	CustomShorthands map[string]string `yaml:"customShorthands"`
@@ -16,7 +15,13 @@ type Configuration struct {
 	} `yaml:"dataToPrint"`
 }
 
-// ReadConfig reads and parses the YAML configuration file
+type FlagSet struct {
+	Mensaname      string
+	MensaId        int
+	DayOffSet      int
+	ConfigFileName string
+}
+
 func ReadConfig(filename string) (*Configuration, error) {
 	// Read the file
 	data, err := os.ReadFile(filename)
