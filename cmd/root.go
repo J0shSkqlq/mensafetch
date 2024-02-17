@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"mensafetch/config"
 	"mensafetch/usecase"
 	"os"
@@ -18,16 +19,17 @@ Usage without any subcommand will print out todays meals for a specific canteen 
 	Run: func(cmd *cobra.Command, args []string) {
 		configFileName, err := cmd.Flags().GetString("Configfile")
 		c, err := config.ReadConfig(configFileName)
-		id, err := cmd.Flags().GetInt("MensaID")
-		day, err := cmd.Flags().GetInt("DayOffset")
-		name, err := cmd.Flags().GetString("MensaName")
+		id, err := cmd.Flags().GetInt("mensaID")
+		day, err := cmd.Flags().GetInt("dayOffset")
+		name, err := cmd.Flags().GetString("mensaName")
 		if err != nil {
-			return
+			fmt.Printf("Error while parsing flags: %s", err)
 		}
 		flags := config.NewFlagSet(name, id, day, configFileName)
-
+		fmt.Println(c)
 		fetcher, err := usecase.NewFetcher(flags, c)
-		fetcher.PrintMeals()
+		//fetcher.PrintMeals()
+		fetcher.GetUIView()
 	},
 }
 
@@ -36,6 +38,7 @@ Usage without any subcommand will print out todays meals for a specific canteen 
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
+		fmt.Printf("error: %s", err)
 		os.Exit(1)
 	}
 }
@@ -46,8 +49,8 @@ func init() {
 	// will be global for your application.
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.MensaFetch.yaml)")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.PersistentFlags().IntP("DayOffset", "d", 0, "Which day to fetch relative to today. 0 for Today, 1 for tomorrow and so on")
-	rootCmd.PersistentFlags().IntP("MensaID", "m", 0, "The ID of the Canteen. Will try to use the string for the name if not given")
-	rootCmd.PersistentFlags().StringP("MensaName", "n", "", "The Name of the Canteen. Will return a list of possibilites if more than one name matches")
-	rootCmd.PersistentFlags().StringP("Configfile", "c", "config.yaml", "The Name of the config file in your mensafetch installation directory")
+	rootCmd.PersistentFlags().IntP("dayOffset", "d", 0, "Which day to fetch relative to today. 0 for Today, 1 for tomorrow and so on")
+	rootCmd.PersistentFlags().IntP("mensaID", "m", 6, "The ID of the Canteen. Will try to use the string for the name if not given")
+	rootCmd.PersistentFlags().StringP("mensaName", "n", "", "The Name of the Canteen. Will return a list of possibilities if more than one name matches")
+	rootCmd.PersistentFlags().StringP("configFile", "c", "config.yaml", "The Name of the config file in your mensafetch installation directory")
 }
